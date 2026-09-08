@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CommitRevealDark: Every swap must have been committed to in an earlier block, so nobody can react to an order they can see</title>
+<meta name="description" content="Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.">
+<link rel="canonical" href="https://commit-reveal-dark.pages.dev/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#07080b">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CommitRevealDark">
+<meta property="og:title" content="CommitRevealDark">
+<meta property="og:description" content="Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.">
+<meta property="og:url" content="https://commit-reveal-dark.pages.dev/">
+<meta property="og:image" content="https://commit-reveal-dark.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="CommitRevealDark">
+<meta name="twitter:description" content="Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.">
+<meta name="twitter:image" content="https://commit-reveal-dark.pages.dev/og.png">
+
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="alternate" type="text/plain" title="For language models" href="/llms.txt">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"CommitRevealDark","description":"Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.","url":"https://commit-reveal-dark.pages.dev","codeRepository":"https://github.com/nirholas/commit-reveal-dark","programmingLanguage":"Solidity","runtimePlatform":"Ethereum Virtual Machine","license":"https://www.apache.org/licenses/LICENSE-2.0","keywords":"mev, anti-sandwich, commit-reveal, order-flow, no-admin","isPartOf":{"@type":"WebSite","name":"HookForge","url":"https://hookforge.pages.dev"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="masthead">
+  <div class="shell masthead__inner">
+    <a class="brand" href="/">CommitRevealDark</a>
+    <nav aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#using">Using it</a>
+      <a href="#deploy">Deploy</a>
+      <a href="https://github.com/nirholas/commit-reveal-dark" rel="noopener">GitHub</a>
+      <a href="https://hookforge.pages.dev" rel="noopener">Catalogue</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <div class="stage">
+    <div class="scene">
+      <canvas data-permissions="{&quot;afterRemoveLiquidityReturnsDelta&quot;:false,&quot;afterAddLiquidityReturnsDelta&quot;:false,&quot;afterSwapReturnsDelta&quot;:false,&quot;beforeSwapReturnsDelta&quot;:false,&quot;afterDonate&quot;:false,&quot;beforeDonate&quot;:false,&quot;afterSwap&quot;:false,&quot;beforeSwap&quot;:true,&quot;afterRemoveLiquidity&quot;:false,&quot;beforeRemoveLiquidity&quot;:false,&quot;afterAddLiquidity&quot;:false,&quot;beforeAddLiquidity&quot;:false,&quot;afterInitialize&quot;:true,&quot;beforeInitialize&quot;:false}" aria-hidden="true"></canvas>
+      <p class="scene__fallback">CommitRevealDark implements 2 of the fourteen Uniswap v4 callbacks: afterInitialize, beforeSwap.</p>
+    </div>
+    <p class="scene__hint">drag to orbit</p>
+
+  <section class="shell hero">
+    <p class="eyebrow">Uniswap v4 hook &middot; Order flow and MEV</p>
+    <h1>CommitRevealDark</h1>
+    <p class="lede">Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.</p>
+    <div class="cta-row">
+      <a class="btn btn--primary" href="https://github.com/nirholas/commit-reveal-dark" rel="noopener">Source on GitHub</a>
+      <a class="btn" href="#using">Use it in a pool</a>
+      <a class="btn" href="/hook.json">Manifest JSON</a>
+    </div>
+
+    <dl class="stats">
+      <div class="stat"><dt>Family</dt><dd>Order flow and MEV</dd></div>
+      <div class="stat"><dt>Callbacks</dt><dd>2 of 14</dd></div>
+      <div class="stat"><dt>Fee</dt><dd>static</dd></div>
+      <div class="stat"><dt>Admin keys</dt><dd>none</dd></div>
+      <div class="stat"><dt>Licence</dt><dd>Apache-2.0</dd></div>
+    </dl>
+  </section>
+  </div>
+
+  <section class="shell">
+    <h2 id="how">How it works</h2>
+      <p>Sandwiching works because of a timing asymmetry, not because of secrecy. Your order is visible before it executes, and an attacker can construct and place their own transactions after seeing it. Every defence that hides the order attacks the wrong half of that: encrypted mempools, private relays and threshold schemes all try to stop the attacker seeing, which is hard, needs new infrastructure, and fails the moment one relay defects.</p>
+      <p>This attacks the other half. If the pool accepts only swaps that were committed to at least one block earlier, then an attacker who sees your order cannot act on it in the pool, because their own reaction would need a commitment made before they knew there was anything to react to. Seeing the order stops being useful.</p>
+      <p>Nothing has to be hidden, and nothing has to be trusted. A commitment is a hash of the swap's parameters and a salt, so it reveals nothing until it is used. Revealing means simply making the swap: the hook recomputes the hash from what actually arrived and requires it to match a commitment that is old enough, unused and unexpired.</p>
+      <p>A commitment that does not match is not a swap this pool will accept. Commitments carry a bond, and this is the part that makes the scheme cost something to abuse. Without it, a trader would commit to every order they might want at every size, then reveal the one they liked, which is a free option on the pool paid for by nobody.</p>
+      <p>The bond is returned in full when the commitment is used and forfeited to the pool when it expires unused, so keeping options open is exactly as expensive as the options are worth to you. The cost of all this is two transactions and a delay of at least one block, and that is the honest trade. A pool wearing this hook is not for the impatient; it is for flow large enough that being sandwiched costs more than waiting a block.</p>
+
+    <div class="callout callout--prior"><h3>Prior art</h3><p>Commit-reveal is old, and appears on-chain in ENS registration, in sealed-bid auctions and in the sandwich-resistant AMM designs that reorder within a block. Encrypted mempools (Shutter, SUAVE, threshold schemes) attack the same problem by hiding the order. Requiring every swap in a pool to have been committed in an earlier block, so that seeing an order is useless rather than impossible, is the contribution here.</p></div>
+    <div class="callout callout--warn"><h3>Where it does not help</h3><p>Two transactions and a block of delay on every trade, which rules the pool out for anything latency-sensitive and makes it unusable through routers that will not forward the salt. It does not stop an attacker who commits speculatively every block and reveals when they see something worth reacting to: the bond makes that expensive rather than impossible, and a pool that sets the bond too low is not protected, it is inconvenient. Finally, a reveal carries its salt in the clear, so an observer can copy it and execute your trade ahead of you.</p>
+      <p>That is a denial rather than a theft, since the copier pays for the swap and the bond still returns to whoever committed, but a trader who is being griefed this way has no recourse beyond committing again.</p></div>
+
+    <h2 id="using">Using it</h2>
+    <p>
+      Uniswap v4 removed <code>hookData</code> from <code>initialize</code>, so per-pool parameters arrive out of band.
+      Fix them for a pool key whose pool does not exist yet, then initialize. Nobody can change them afterwards,
+      including you.
+    </p>
+    <pre><code>hook.configure(
+    key,
+    CommitRevealDarkHook.Config({
+        delayBlocks: /* uint32 */ 0,
+        ttlBlocks: /* uint32 */ 0,
+        bond: /* uint128 */ 0
+    })
+);
+
+poolManager.initialize(key, startingSqrtPriceX96);</code></pre>
+    
+
+    <h3>Parameters</h3>
+    <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Units</th></tr></thead>
+        <tbody><tr><td><code>delayBlocks</code></td><td><code>uint32</code></td><td></td></tr>
+          <tr><td><code>ttlBlocks</code></td><td><code>uint32</code></td><td></td></tr>
+          <tr><td><code>bond</code></td><td><code>uint128</code></td><td></td></tr></tbody>
+      </table>
+
+    <h3>From TypeScript</h3>
+    <pre><code>npm i @hookforge/sdk
+
+import {getHook, hookAddress, poolKeyFor} from "@hookforge/sdk";
+
+const hook = getHook("commit-reveal-dark");
+const key  = poolKeyFor({
+  hook: hookAddress("commit-reveal-dark", 8453),   // Base
+  currencyA: USDC, currencyB: WETH,
+  tickSpacing: 60,
+});</code></pre>
+
+    <h2>What it reverts with</h2>
+    <table>
+        <thead><tr><th>Error</th><th>Meaning</th></tr></thead>
+        <tbody><tr><td><code>AlreadyCommitted()</code></td><td>This commitment already exists. Vary the salt.</td></tr>
+          <tr><td><code>Expired(uint256)</code></td><td>The commitment has expired and its bond is forfeited.</td></tr>
+          <tr><td><code>InvalidDelay()</code></td><td>A delay of zero would let somebody commit and reveal in the same block, which is no protection at all.</td></tr>
+          <tr><td><code>InvalidTtl()</code></td><td>The time to live must exceed the delay, or a commitment expires before it may be used.</td></tr>
+          <tr><td><code>NotCommitted(bytes32)</code></td><td>The swap does not match any standing commitment.</td></tr>
+          <tr><td><code>NotExpiredYet(uint256)</code></td><td>The commitment has not expired, so its bond cannot be swept.</td></tr>
+          <tr><td><code>NothingToWithdraw()</code></td><td>There is nothing to withdraw.</td></tr>
+          <tr><td><code>PoolAlreadyInitialized()</code></td><td>The pool already exists, so its configuration is final.</td></tr>
+          <tr><td><code>PoolNotConfigured()</code></td><td>The pool was initialized without a configuration for this hook.</td></tr>
+          <tr><td><code>TooSoon(uint256)</code></td><td>The commitment is not old enough to be revealed yet.</td></tr>
+          <tr><td><code>WrongBond(uint256)</code></td><td>The bond sent does not match what the pool requires.</td></tr></tbody>
+      </table>
+
+    <h2>The callbacks it claims</h2>
+    <p>
+      Uniswap v4 reads a hook's permissions from the low fourteen bits of its own address, which is why deploying one
+      means mining a CREATE2 salt. This hook claims 2, so every deployment of it has an address ending
+      in <code>0x1080</code>.
+    </p>
+    <ul class="flags"><li class="flag">beforeInitialize</li><li class="flag flag--on">afterInitialize</li><li class="flag">beforeAddLiquidity</li><li class="flag">afterAddLiquidity</li><li class="flag">beforeRemoveLiquidity</li><li class="flag">afterRemoveLiquidity</li><li class="flag flag--on">beforeSwap</li><li class="flag">afterSwap</li><li class="flag">beforeDonate</li><li class="flag">afterDonate</li><li class="flag">beforeSwapReturnsDelta</li><li class="flag">afterSwapReturnsDelta</li><li class="flag">afterAddLiquidityReturnsDelta</li><li class="flag">afterRemoveLiquidityReturnsDelta</li></ul>
+
+    <h2>It says what it is, on-chain</h2>
+    <p>
+      Nothing about a hook's address tells an indexer, a wallet, a router or an agent what the pool does, which is why
+      hook discovery today is a curated list. This hook answers for itself, in one <code>eth_call</code>, with no
+      registry in the loop.
+    </p>
+    <pre><code>cast call $HOOK "hookName()(string)"    # CommitRevealDark
+cast call $HOOK "specURI()(string)"     # https://commit-reveal-dark.pages.dev/hook.json
+cast call $HOOK "hookTags()(string[])"  # mev, anti-sandwich, commit-reveal, order-flow, no-admin</code></pre>
+
+    <h2 id="deploy">Build, test and deploy</h2>
+    <pre><code>git clone --recurse-submodules https://github.com/nirholas/commit-reveal-dark
+cd commit-reveal-dark
+forge build &amp;&amp; forge test
+
+# Dry run: mines the salt, prints the address, sends nothing.
+forge script script/Deploy.s.sol --rpc-url $RPC_URL
+
+# For real.
+forge script script/Deploy.s.sol --rpc-url $RPC_URL --broadcast --verify</code></pre>
+
+    <div class="callout callout--warn">
+      <h3>Status</h3>
+      <p>
+        <strong>Unaudited.</strong> Built to an audited shape, on OpenZeppelin's audited hook bases, and tested against
+        a real <code>PoolManager</code>. No third party has reviewed it. Read "where it does not help" above before
+        putting money behind it. Not affiliated with Uniswap Labs.
+      </p>
+    </div>
+  </section>
+
+  <section class="shell">
+    <h2 id="try">Try it</h2>
+    <p>
+      This is the hook running, not a picture of it. Connect a wallet on a chain it is deployed to, or bring the whole
+      stack up locally in one command and use it with no funds and no wallet risk at all.
+    </p>
+    <div class="demo" data-demo="commit-reveal-dark">
+      <div class="panel panel--empty">
+        <p>Loading the demo… if this does not change, JavaScript is blocked and the demo cannot run.</p>
+      </div>
+    </div>
+    <details class="raw">
+      <summary>Run the whole thing locally</summary>
+      <pre><code>git clone --recurse-submodules https://github.com/nirholas/commit-reveal-dark
+cd commit-reveal-dark
+
+anvil &amp;
+forge script script/DeployLocal.s.sol --rpc-url http://127.0.0.1:8545 --broadcast \
+  --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+node web/build.mjs &amp;&amp; npx serve web/dist</code></pre>
+      <p class="muted">
+        The deploy script writes <code>web/local.json</code> itself and the build merges it, so the page points at the
+        chain you just created without you editing anything. Point a wallet at
+        <code>http://127.0.0.1:8545</code> and every button on this page works.
+      </p>
+      <p class="muted">
+        Anvil's first account is pre-funded and its key is public by design. Never use it anywhere real.
+      </p>
+    </details>
+  </section>
+  <script type="application/json" id="deployments">{"chains":{},"errors":[{"type":"error","name":"AlreadyCommitted","inputs":[]},{"type":"error","name":"Expired","inputs":[{"name":"expiredAt","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"HookNotImplemented","inputs":[]},{"type":"error","name":"InvalidDelay","inputs":[]},{"type":"error","name":"InvalidPool","inputs":[]},{"type":"error","name":"InvalidTtl","inputs":[]},{"type":"error","name":"NotCommitted","inputs":[{"name":"expected","type":"bytes32","internalType":"bytes32"}]},{"type":"error","name":"NotExpiredYet","inputs":[{"name":"expiresAt","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"NotPoolManager","inputs":[]},{"type":"error","name":"NothingToWithdraw","inputs":[]},{"type":"error","name":"PoolAlreadyInitialized","inputs":[]},{"type":"error","name":"PoolNotConfigured","inputs":[]},{"type":"error","name":"TooSoon","inputs":[{"name":"revealableAt","type":"uint256","internalType":"uint256"}]},{"type":"error","name":"WrongBond","inputs":[{"name":"required","type":"uint256","internalType":"uint256"}]}],"demo":{"panel":"commit","title":"Commit now, trade one block later","lede":"Every swap on this pool must have been committed to in an earlier block. Seeing an order stops being useful, because reacting to it would need a commitment made before you knew it existed. Commit below, watch the blocks count down, then reveal.","defaultAmount":"0.01","zeroForOneLabel":"Sell currency0","oneForZeroLabel":"Buy currency0","localDeploy":{"flags":"Hooks.AFTER_INITIALIZE_FLAG | Hooks.BEFORE_SWAP_FLAG","config":"CommitRevealDarkHook.Config({delayBlocks: 1, ttlBlocks: 200, bond: 0.001 ether})","dynamicFee":false}}}</script>
+  <script type="module" src="/assets/demo.js"></script>
+</main>
+
+<footer class="foot">
+  <div class="shell">
+    <p>
+      <a href="https://github.com/nirholas/commit-reveal-dark" rel="noopener">Source</a> &middot;
+      <a href="/hook.json">Manifest</a> &middot;
+      <a href="/llms.txt">llms.txt</a> &middot;
+      <a href="https://hookforge.pages.dev" rel="noopener">The rest of the catalogue</a>
+    </p>
+    <p>Apache-2.0 licensed. Not affiliated with Uniswap Labs.</p>
+  </div>
+</footer>
+<script type="module" src="/assets/scene.js"></script>
+</body>
+</html>
