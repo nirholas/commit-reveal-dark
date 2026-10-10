@@ -1,5 +1,10 @@
 # CommitRevealDark
 
+<!-- three.ws:badges -->
+[![GitHub stars](https://img.shields.io/github/stars/nirholas/commit-reveal-dark?style=flat&logo=github)](https://github.com/nirholas/commit-reveal-dark/stargazers) [![License](https://img.shields.io/github/license/nirholas/commit-reveal-dark?style=flat)](https://github.com/nirholas/commit-reveal-dark/blob/HEAD/LICENSE) [![Last commit](https://img.shields.io/github/last-commit/nirholas/commit-reveal-dark?style=flat)](https://github.com/nirholas/commit-reveal-dark/commits) [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat)](https://github.com/nirholas/commit-reveal-dark/pulls) [![AI agent friendly](https://img.shields.io/badge/AI%20agents-AGENTS.md%20%2B%20llms.txt-6d5dfc?style=flat)](https://github.com/nirholas/commit-reveal-dark/blob/HEAD/AGENTS.md)
+<!-- /three.ws:badges -->
+
+
 **Every swap must have been committed to in an earlier block, so nobody can react to an order they can see.**
 
 A production Uniswap v4 hook. It holds no funds and takes no fee for itself. No owner, no pause switch, no upgrade path.
@@ -125,3 +130,26 @@ Not affiliated with Uniswap Labs.
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=nirholas/commit-reveal-dark&type=Date)](https://www.star-history.com/#nirholas/commit-reveal-dark&Date)
+
+<!-- three.ws:growth -->
+## Support the project
+
+If commit-reveal-dark saves you time, **[star it on GitHub](https://github.com/nirholas/commit-reveal-dark)**. Stars are how other developers and AI agents find the repositories worth trusting, and they cost you one click.
+
+Know someone who would use it? [Post on X](https://twitter.com/intent/tweet?text=commit-reveal-dark%3A%20Every%20swap%20must%20have%20been%20committed%20to%20in%20an%20earlier%20block%2C%20so%20nobody%20can%20react%20to%20an%20order%20they&url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fcommit-reveal-dark) · [Share on Bluesky](https://bsky.app/intent/compose?text=commit-reveal-dark%3A%20Every%20swap%20must%20have%20been%20committed%20to%20in%20an%20earlier%20block%2C%20so%20nobody%20can%20react%20to%20an%20order%20they%20https%3A%2F%2Fgithub.com%2Fnirholas%2Fcommit-reveal-dark) · [Share on LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fcommit-reveal-dark) · [Submit to Hacker News](https://news.ycombinator.com/submitlink?u=https%3A%2F%2Fgithub.com%2Fnirholas%2Fcommit-reveal-dark&t=commit-reveal-dark%3A%20Every%20swap%20must%20have%20been%20committed%20to%20in%20an%20earlier%20block%2C%20so%20nobody%20can%20react%20to%20an%20order%20they) · [Share on Reddit](https://www.reddit.com/submit?url=https%3A%2F%2Fgithub.com%2Fnirholas%2Fcommit-reveal-dark&title=commit-reveal-dark%3A%20Every%20swap%20must%20have%20been%20committed%20to%20in%20an%20earlier%20block%2C%20so%20nobody%20can%20react%20to%20an%20order%20they)
+
+## Built for AI agents too
+
+Coding agents and LLM tooling can read this repo directly: [AGENTS.md](./AGENTS.md), [llms.txt](./llms.txt), [llms-full.txt](./llms-full.txt). Point an agent at `https://github.com/nirholas/commit-reveal-dark` and it has the context it needs.
+
+## More from the same author
+
+- [All repositories by nirholas](https://github.com/nirholas/nirholas#readme): the full catalog, grouped by topic
+- [three.ws](https://three.ws): the platform for 3D AI agents with Solana wallets, a skill marketplace and x402 payments
+- Questions or ideas: [open an issue](https://github.com/nirholas/commit-reveal-dark/issues) or [start a discussion](https://github.com/nirholas/commit-reveal-dark/discussions)
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=nirholas/commit-reveal-dark)](https://github.com/nirholas/commit-reveal-dark/graphs/contributors)
+
+<!-- /three.ws:growth -->
